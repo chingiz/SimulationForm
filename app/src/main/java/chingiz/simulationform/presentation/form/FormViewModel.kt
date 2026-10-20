@@ -56,8 +56,9 @@ class FormViewModel @Inject constructor(
 
     private fun refresh() {
         if (refreshJob?.isActive == true) return
+        // Set synchronously so the very first frame already shows the loading state.
+        setState { copy(isRefreshing = true) }
         refreshJob = viewModelScope.launch {
-            setState { copy(isRefreshing = true) }
             when (val result = refreshForm()) {
                 is DataResult.Success -> setState { copy(isRefreshing = false, error = null) }
                 is DataResult.Error -> setState { copy(isRefreshing = false, error = result.error) }
