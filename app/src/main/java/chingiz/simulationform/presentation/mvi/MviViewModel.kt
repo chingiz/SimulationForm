@@ -1,0 +1,37 @@
+package chingiz.simulationform.presentation.mvi
+
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
+
+interface UiState
+interface UiIntent
+interface UiEffect
+
+/**
+ * Unidirectional data flow: the View sends [I]ntents, the ViewModel reduces them into a new
+ * immutable [S]tate and optionally emits one-off [E]ffects (navigation, messages).
+ */
+abstract class MviViewModel<S : UiState, I : UiIntent, E : UiEffect>(initialState: S) : ViewModel() {
+
+    private val _state = MutableStateFlow(initialState)
+    val state: StateFlow<S> = _state.asStateFlow()
+
+    private val _effects = Channel<E>(Channel.BUFFERED)
+    val effects: Flow<E> = _effects.receiveAsFlow()
+
+    protected val currentState: S get() = _state.value
+
+    abstract fun onIntent(intent: I)
+
+    protected fun setState(reducer: S.() -> S) = _state.update(reducer)
+
+    protected fun sendEffect(effect: E) {
+        _effects.trySend(effect)
+    }
+}
