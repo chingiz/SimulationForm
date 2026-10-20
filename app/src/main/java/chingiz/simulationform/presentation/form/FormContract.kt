@@ -12,12 +12,13 @@ data class FormState(
     val selections: Map<Long, Set<Long>> = emptyMap(),
     val isRefreshing: Boolean = false,
     val error: DataError? = null,
+    val isOnline: Boolean = true,
 ) : UiState {
     val isInitialLoading: Boolean get() = pages.isEmpty() && isRefreshing
     val showFullScreenError: Boolean get() = pages.isEmpty() && !isRefreshing && error != null
 
-    /** Cached content is shown but the latest refresh failed. */
-    val isShowingStaleData: Boolean get() = pages.isNotEmpty() && error != null
+    /** Cached content is shown while the device is offline or the latest refresh failed. */
+    val isShowingStaleData: Boolean get() = pages.isNotEmpty() && (!isOnline || error != null)
 }
 
 sealed interface FormIntent : UiIntent {

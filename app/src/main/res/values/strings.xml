@@ -10,4 +10,14 @@
     <string name="image_content_description">Image: %1$s</string>
     <string name="image_not_found">Image not found.</string>
     <string name="back">Back</string>
+    <string name="retry">Retry</string>
+    <string name="empty_form">The form has no content yet.</string>
+    <string name="error_title">Couldn\'t load the form</string>
+    <string name="error_no_internet">No internet connection.</string>
+    <string name="error_timeout">The connection is too slow. Request timed out.</string>
+    <string name="error_server">The server is unavailable right now.</string>
+    <string name="error_serialization">Received unexpected data from the server.</string>
+    <string name="error_unknown">Something went wrong.</string>
+    <string name="offline_banner">You\'re offline. Showing saved data.</string>
+    <string name="stale_banner">%1$s Showing saved data.</string>
 </resources>

@@ -1,7 +1,10 @@
 package chingiz.simulationform.presentation.form
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +37,9 @@ import chingiz.simulationform.domain.model.ResponseSet
 import chingiz.simulationform.domain.model.Section
 import chingiz.simulationform.domain.model.TextQuestion
 import chingiz.simulationform.presentation.form.components.ChoiceQuestionRow
+import chingiz.simulationform.presentation.form.components.EmptyForm
+import chingiz.simulationform.presentation.form.components.FullScreenError
+import chingiz.simulationform.presentation.form.components.StaleDataBanner
 import chingiz.simulationform.presentation.form.components.HierarchyRow
 import chingiz.simulationform.presentation.form.components.ImageQuestionRow
 import chingiz.simulationform.presentation.form.components.PageHeaderRow
@@ -78,15 +84,43 @@ fun FormScreen(
             )
         },
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
         ) {
-            if (state.isInitialLoading) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            } else {
-                FormContent(state, onIntent)
+            if (state.isShowingStaleData) {
+                StaleDataBanner(
+                    isOnline = state.isOnline,
+                    error = state.error,
+                    onRetry = { onIntent(FormIntent.Refresh) },
+                )
+            }
+            PullToRefreshBox(
+                isRefreshing = state.isRefreshing && !state.isInitialLoading,
+                onRefresh = { onIntent(FormIntent.Refresh) },
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                when {
+                    state.isInitialLoading ->
+                        CircularProgressIndicator(Modifier.align(Alignment.Center))
+
+                    state.showFullScreenError -> FullScreenError(
+                        error = requireNotNull(state.error),
+                        onRetry = { onIntent(FormIntent.Refresh) },
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .verticalScroll(rememberScrollState()),
+                    )
+
+                    state.pages.isEmpty() -> EmptyForm(
+                        Modifier
+                            .align(Alignment.Center)
+                            .verticalScroll(rememberScrollState()),
+                    )
+
+                    else -> FormContent(state, onIntent)
+                }
             }
         }
     }

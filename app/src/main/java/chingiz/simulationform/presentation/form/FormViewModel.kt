@@ -2,6 +2,7 @@ package chingiz.simulationform.presentation.form
 
 import androidx.lifecycle.viewModelScope
 import chingiz.simulationform.domain.model.DataResult
+import chingiz.simulationform.domain.usecase.ObserveConnectivityUseCase
 import chingiz.simulationform.domain.usecase.ObservePagesUseCase
 import chingiz.simulationform.domain.usecase.ObserveSelectionsUseCase
 import chingiz.simulationform.domain.usecase.RefreshFormUseCase
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class FormViewModel @Inject constructor(
     observePages: ObservePagesUseCase,
     observeSelections: ObserveSelectionsUseCase,
+    observeConnectivity: ObserveConnectivityUseCase,
     private val refreshForm: RefreshFormUseCase,
     private val toggleResponse: ToggleResponseUseCase,
 ) : MviViewModel<FormState, FormIntent, FormEffect>(FormState()) {
@@ -31,7 +33,17 @@ class FormViewModel @Inject constructor(
         observeSelections()
             .onEach { selections -> setState { copy(selections = selections) } }
             .launchIn(viewModelScope)
+        observeConnectivity()
+            .onEach(::onConnectivityChanged)
+            .launchIn(viewModelScope)
         refresh()
+    }
+
+    /** Automatically retries a failed refresh as soon as connectivity is restored. */
+    private fun onConnectivityChanged(isOnline: Boolean) {
+        val wasOffline = !currentState.isOnline
+        setState { copy(isOnline = isOnline) }
+        if (isOnline && wasOffline && currentState.error != null) refresh()
     }
 
     override fun onIntent(intent: FormIntent) {
