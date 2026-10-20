@@ -1,0 +1,10 @@
+package chingiz.simulationform.data.remote.api
+
+import chingiz.simulationform.data.remote.dto.FormItemDto
+import retrofit2.http.GET
+
+interface FormApi {
+
+    @GET("aruana-lumiform/383e1291df3e0cc1d49aeb14d45f5b94/raw/lumiform-android-test.json")
+    suspend fun getForm(): List<FormItemDto>
+}
