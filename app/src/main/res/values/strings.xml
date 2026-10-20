@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">SimulationForm</string>
+    <string name="form_title">Inspection Form</string>
+    <string name="item_id">#%1$d</string>
+    <string name="selection_none">none selected</string>
+    <string name="selection_count">%1$d selected</string>
+    <string name="selection_single">single-select</string>
+    <string name="selection_multi">multi-select</string>
+    <string name="selection_summary">%1$s (%2$s)</string>
+    <string name="image_content_description">Image: %1$s</string>
 </resources>
