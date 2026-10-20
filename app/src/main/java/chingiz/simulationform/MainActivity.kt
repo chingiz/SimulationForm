@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import chingiz.simulationform.presentation.form.FormRoute
+import chingiz.simulationform.presentation.navigation.AppNavHost
 import chingiz.simulationform.ui.theme.SimulationFormTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SimulationFormTheme {
-                FormRoute(onOpenImage = {})
+                AppNavHost()
             }
         }
     }
